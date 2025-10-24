@@ -43,14 +43,13 @@ const winningCombos = [
   [0,4,8],[2,4,6]
 ];
 
-// Overlay functions
 function showOverlay(message){
   overlayMessage.textContent = message;
-  overlay.style.display = "flex";
+  overlay.classList.remove("hidden");
 }
 
 function hideOverlay(){
-  overlay.style.display = "none";
+  overlay.classList.add("hidden");
 }
 
 overlayReset.addEventListener("click", ()=>{
@@ -144,13 +143,9 @@ function aiMove(){
     moveIndex = minimax(board, aiSymbol).index;
   }
 
-  const cellEl = document.querySelector(`.cell[data-index='${moveIndex}']`);
-  cellEl.classList.add("ai-thinking");
-
   setTimeout(()=>{
     board[moveIndex]=aiSymbol;
     updateCell(moveIndex,aiSymbol);
-    cellEl.classList.remove("ai-thinking");
 
     const result = checkWin(aiSymbol);
     if(result){
@@ -207,74 +202,80 @@ function resetBoard(){
 twoPlayerBtn.addEventListener("click",()=>{
   gameMode="two-player";
   currentPlayer="X";
-  symbolChoiceEl.style.display="none";
-  difficultyChoiceEl.style.display="none";
-  colorChoiceEl.style.display="block";
+  symbolChoiceEl.classList.add("hidden");
+  difficultyChoiceEl.classList.add("hidden");
+  colorChoiceEl.classList.remove("hidden");
   resetBoard();
 });
 
 vsAIBtn.addEventListener("click",()=>{
   gameMode="vs-ai";
-  symbolChoiceEl.style.display="block";
-  difficultyChoiceEl.style.display="none";
-  colorChoiceEl.style.display="none";
+  symbolChoiceEl.classList.remove("hidden");
+  difficultyChoiceEl.classList.add("hidden");
+  colorChoiceEl.classList.add("hidden");
 });
 
 chooseXBtn.addEventListener("click",()=>{
   playerSymbol="X"; aiSymbol="O";
-  symbolChoiceEl.style.display="none";
-  difficultyChoiceEl.style.display="block";
+  symbolChoiceEl.classList.add("hidden");
+  difficultyChoiceEl.classList.remove("hidden");
 });
 
 chooseOBtn.addEventListener("click",()=>{
   playerSymbol="O"; aiSymbol="X";
-  symbolChoiceEl.style.display="none";
-  difficultyChoiceEl.style.display="block";
+  symbolChoiceEl.classList.add("hidden");
+  difficultyChoiceEl.classList.remove("hidden");
 });
 
 easyBtn.addEventListener("click",()=>{
   aiDifficulty="easy";
-  difficultyChoiceEl.style.display="none";
-  colorChoiceEl.style.display="block";
+  difficultyChoiceEl.classList.add("hidden");
+  colorChoiceEl.classList.remove("hidden");
   resetBoard();
 });
 
 hardBtn.addEventListener("click",()=>{
   aiDifficulty="hard";
-  difficultyChoiceEl.style.display="none";
-  colorChoiceEl.style.display="block";
+  difficultyChoiceEl.classList.add("hidden");
+  colorChoiceEl.classList.remove("hidden");
   resetBoard();
 });
 
 applyColorsBtn.addEventListener("click",()=>{
-  colorX=colorXInput.value;
-  colorO=colorOInput.value;
-  colorBoard=colorBoardInput.value;
+  colorX = colorXInput.value;
+  colorO = colorOInput.value;
+  colorBoard = colorBoardInput.value;
   updateBoardColors();
 });
 
 resetBtn.addEventListener("click",()=>{
-  scoreX=scoreO=tieScore=0;
+  scoreX=0; scoreO=0; tieScore=0;
   saveScores();
   updateScores();
-  resetBoard();
 });
 
-// Minimax AI
+// Minimax for Hard AI
 function minimax(newBoard, player){
   const availSpots = newBoard.map((v,i)=>v===""?i:null).filter(i=>i!==null);
 
-  if(checkWinForMinimax(newBoard, playerSymbol)) return {score:-10};
-  else if(checkWinForMinimax(newBoard, aiSymbol)) return {score:10};
+  if(checkWinForMinimax(newBoard,playerSymbol)) return {score:-10};
+  else if(checkWinForMinimax(newBoard,aiSymbol)) return {score:10};
   else if(availSpots.length===0) return {score:0};
 
-  const moves=[];
+  const moves = [];
   for(let i of availSpots){
     const move = {};
-    move.index=i;
+    move.index = i;
     newBoard[i]=player;
-    const result = minimax(newBoard, player===aiSymbol?playerSymbol:aiSymbol);
-    move.score=result.score;
+
+    if(player===aiSymbol){
+      const result = minimax(newBoard,playerSymbol);
+      move.score=result.score;
+    } else {
+      const result = minimax(newBoard,aiSymbol);
+      move.score=result.score;
+    }
+
     newBoard[i]="";
     moves.push(move);
   }
@@ -282,11 +283,12 @@ function minimax(newBoard, player){
   let bestMove;
   if(player===aiSymbol){
     let bestScore=-Infinity;
-    moves.forEach(m=>{if(m.score>bestScore){bestScore=m.score; bestMove=m;}});
+    moves.forEach(m=>{ if(m.score>bestScore){ bestScore=m.score; bestMove=m; } });
   } else {
     let bestScore=Infinity;
-    moves.forEach(m=>{if(m.score<bestScore){bestScore=m.score; bestMove=m;}});
+    moves.forEach(m=>{ if(m.score<bestScore){ bestScore=m.score; bestMove=m; } });
   }
+
   return bestMove;
 }
 
@@ -297,6 +299,8 @@ function checkWinForMinimax(b,player){
 // Initialize
 loadScores();
 createBoard();
+
+
 
 
 
