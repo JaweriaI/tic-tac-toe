@@ -1,100 +1,116 @@
-document.addEventListener("DOMContentLoaded", () => {
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+  margin: 0;
+  padding: 10px;
+}
 
-  // Game state
-  let board = Array(9).fill("");
-  let currentPlayer = "X";
-  let gameMode = "two-player";
-  let playerSymbol = "X";
-  let aiSymbol = "O";
-  let gameOver = false;
+h1 {
+  color: #333;
+  margin-bottom: 10px;
+  text-align: center;
+}
 
-  // DOM elements
-  const boardEl = document.getElementById("board");
-  const resetBtn = document.getElementById("reset");
-  const modeBtns = {
-    twoPlayer: document.getElementById("two-player"),
-    vsAI: document.getElementById("vs-ai")
-  };
-  const symbolChoiceEl = document.getElementById("symbol-choice");
-  const chooseXBtn = document.getElementById("choose-x");
-  const chooseOBtn = document.getElementById("choose-o");
+#game {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 10px;
+  width: 100%;
+  max-width: 400px;
+  aspect-ratio: 1 / 1;
+  margin-top: 20px;
+}
 
-  // Winning combinations
-  const winningCombos = [
-    [0,1,2],[3,4,5],[6,7,8],
-    [0,3,6],[1,4,7],[2,5,8],
-    [0,4,8],[2,4,6]
-  ];
+.cell {
+  background-color: #fff;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 5vw;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.3s;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
 
-  // Initialize board
-  function initBoard() {
-    boardEl.innerHTML = "";
-    board.forEach((cell, index) => {
-      const cellEl = document.createElement("div");
-      cellEl.classList.add("cell");
-      cellEl.addEventListener("click", () => handleClick(cellEl, index));
-      boardEl.appendChild(cellEl);
-    });
+.cell:hover {
+  transform: scale(1.05);
+  background-color: #f0f0f0;
+}
+
+.cell.winning {
+  background-color: #4CAF50;
+  color: white;
+  animation: flash 0.6s ease-in-out 0s 3;
+}
+
+@keyframes flash {
+  0%, 100% { background-color: #4CAF50; }
+  50% { background-color: #81C784; }
+}
+
+#controls {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+button {
+  padding: 10px 18px;
+  margin: 5px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  background-color: #007BFF;
+  color: white;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+#scores {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+#symbol-choice, #difficulty-choice {
+  margin-top: 15px;
+  text-align: center;
+}
+
+#symbol-choice button, #difficulty-choice button {
+  background-color: #28a745;
+}
+
+#symbol-choice button:hover, #difficulty-choice button:hover {
+  background-color: #218838;
+}
+
+/* Responsive design */
+@media (max-width: 500px) {
+  .cell {
+    font-size: 12vw;
   }
 
-  // Handle cell click
-  function handleClick(cellEl, index) {
-    if (board[index] !== "" || gameOver) return;
-
-    const symbol = currentPlayer;
-    board[index] = symbol;
-    cellEl.textContent = symbol;
-    cellEl.classList.remove("x","o");
-    cellEl.classList.add(symbol.toLowerCase());
-
-    if (checkWin(symbol)) {
-      gameOver = true;
-      alert(symbol + " wins!");
-      return;
-    }
-
-    if (board.every(cell => cell !== "")) {
-      gameOver = true;
-      alert("It's a tie!");
-      return;
-    }
-
-    if (gameMode === "two-player") {
-      currentPlayer = currentPlayer === "X" ? "O" : "X";
-    } else if (gameMode === "vs-ai") {
-      currentPlayer = aiSymbol;
-      aiMove();
-      currentPlayer = playerSymbol;
-    }
+  button {
+    padding: 8px 14px;
+    font-size: 0.9rem;
   }
+}
 
-  // AI move: random empty cell
-  function aiMove() {
-    if (gameOver) return;
-    const emptyIndexes = board.map((v,i) => v === "" ? i : null).filter(v => v !== null);
-    if (emptyIndexes.length === 0) return;
-
-    const moveIndex = emptyIndexes[Math.floor(Math.random()*emptyIndexes.length)];
-    const cellEl = boardEl.children[moveIndex];
-    board[moveIndex] = aiSymbol;
-    cellEl.textContent = aiSymbol;
-    cellEl.classList.remove("x","o");
-    cellEl.classList.add(aiSymbol.toLowerCase());
-
-    checkWin(aiSymbol);
-  }
-
-  // Check for win
-  function checkWin(symbol) {
-    let won = false;
-    winningCombos.forEach(combo => {
-      if (combo.every(index => board[index] === symbol)) {
-        won = true;
-        combo.forEach(index => boardEl.children[index].classList.add("winning"));
-      }
-    });
-    return won;
-  }
 
 
 
