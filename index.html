@@ -26,6 +26,14 @@
     <button id="hard">Hard</button>
   </div>
 
+  <div id="color-choice" style="display:none;">
+    <p>Pick colors:</p>
+    <label>X color: <input type="color" id="color-x" value="#FF0000"></label>
+    <label>O color: <input type="color" id="color-o" value="#0000FF"></label>
+    <label>Board color: <input type="color" id="color-board" value="#f0f0f0"></label>
+    <button id="apply-colors">Apply Colors</button>
+  </div>
+
   <div id="scoreboard">
     <p>Player X: <span id="score-x">0</span></p>
     <p>Player O: <span id="score-o">0</span></p>
@@ -36,7 +44,6 @@
 
   <button id="reset">Reset Scores & Board</button>
 
-  <!-- Overlay for result -->
   <div id="overlay" style="display:none;">
     <div id="overlay-content">
       <h2 id="overlay-message"></h2>
