@@ -84,21 +84,14 @@ function checkWinner() {
   for (let combo of winningCombinations) {
     const [a,b,c] = combo;
     if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-      cells[a].classList.add('winning');
-      cells[b].classList.add('winning');
-      cells[c].classList.add('winning');
-
+      combo.forEach(i => cells[i].classList.add('winning'));
       message.textContent = `Player ${board[a]} wins!`;
       isGameOver = true;
-
-      if (board[a] === 'X') scoreX++;
-      else scoreO++;
-
+      board[a]==='X'?scoreX++:scoreO++;
       updateScore();
       return;
     }
   }
-
   if (!board.includes('')) {
     message.textContent = "It's a tie!";
     isGameOver = true;
@@ -175,6 +168,7 @@ function findWinningMove(player) {
   }
   return null;
 }
+
 
 
 
