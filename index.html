@@ -1,56 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tic Tac Toe</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modern Tic Tac Toe</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Tic Tac Toe</h1>
 
-  <div id="symbol-choice">
-    <h2>Choose your symbol</h2>
-    <button id="chooseX">X</button>
-    <button id="chooseO">O</button>
+  <h1>🎮 Tic Tac Toe</h1>
+
+  <!-- Mode selection: 2-player or vs AI -->
+  <div id="mode-selection">
+    <span>Select Mode:</span>
+    <button id="two-player">2 Players</button>
+    <button id="vs-ai">Play vs AI</button>
   </div>
 
-  <div id="game" style="display:none;">
-    <h2 id="turn">Current turn: X</h2>
-
-    <div id="board">
-      <div class="cell" data-index="0"></div>
-      <div class="cell" data-index="1"></div>
-      <div class="cell" data-index="2"></div>
-      <div class="cell" data-index="3"></div>
-      <div class="cell" data-index="4"></div>
-      <div class="cell" data-index="5"></div>
-      <div class="cell" data-index="6"></div>
-      <div class="cell" data-index="7"></div>
-      <div class="cell" data-index="8"></div>
-    </div>
-
-    <p id="message"></p>
-
-    <div id="scoreboard">
-      <p>Score X: <span id="scoreX">0</span></p>
-      <p>Score O: <span id="scoreO">0</span></p>
-    </div>
-
-    <div id="controls">
-      <button id="reset">Reset Game</button>
-      <button id="restartMatch">Restart Match</button>
-    </div>
-
-    <div id="mode-selection">
-      <label><input type="radio" name="mode" value="ai" checked> Play vs AI</label>
-      <label><input type="radio" name="mode" value="two"> Two Player</label>
-    </div>
+  <!-- Symbol choice (X or O) -->
+  <div id="symbol-choice" style="display:none;">
+    <span>Choose your symbol:</span>
+    <button id="choose-x">X</button>
+    <button id="choose-o">O</button>
   </div>
 
-<script src="script.js"></script>
+  <!-- Tic Tac Toe Board -->
+  <div id="board"></div>
+
+  <!-- Controls -->
+  <div id="controls">
+    <button id="reset">Restart Game</button>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
+
+
 
 
 
