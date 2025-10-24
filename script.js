@@ -30,24 +30,16 @@ const winningCombinations = [
 ];
 
 // Symbol selection
-chooseXBtn.addEventListener('click', () => {
-  playerSymbol = 'X';
-  aiSymbol = 'O';
-  startGame();
-});
-chooseOBtn.addEventListener('click', () => {
-  playerSymbol = 'O';
-  aiSymbol = 'X';
-  startGame();
-});
+chooseXBtn.addEventListener('click', () => { playerSymbol = 'X'; aiSymbol = 'O'; startGame(); });
+chooseOBtn.addEventListener('click', () => { playerSymbol = 'O'; aiSymbol = 'X'; startGame(); });
 
 function startGame() {
   symbolChoiceDiv.style.display = 'none';
   gameDiv.style.display = 'block';
-  currentPlayer = playerSymbol; // Start with player's chosen symbol
+  currentPlayer = playerSymbol;
   updateTurn();
+  resetBoard();
 
-  // If player chose O and mode is AI, AI starts first
   if (mode === 'ai' && playerSymbol === 'O') {
     currentPlayer = aiSymbol;
     updateTurn();
@@ -63,7 +55,36 @@ modeRadios.forEach(radio => {
   });
 });
 
-// Check winner
+// Handle clicks
+cells.forEach(cell => {
+  cell.addEventListener('click', () => {
+    const index = cell.dataset.index;
+    if (board[index] === '' && !isGameOver) {
+      makeMove(cell, index, currentPlayer);
+
+      checkWinner();
+
+      if (!isGameOver) {
+        if (mode === 'two') {
+          currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+          updateTurn();
+        } else if (mode === 'ai' && currentPlayer === playerSymbol) {
+          currentPlayer = aiSymbol;
+          updateTurn();
+          setTimeout(computerMove, 300);
+        }
+      }
+    }
+  });
+});
+
+function makeMove(cell, index, player) {
+  board[index] = player;
+  cell.querySelector('span').textContent = player;
+  cell.querySelector('span').style.color = player === 'X' ? 'red' : 'blue';
+  clickSound.play();
+}
+
 function checkWinner() {
   for (let combo of winningCombinations) {
     const [a, b, c] = combo;
@@ -75,12 +96,15 @@ function checkWinner() {
       message.textContent = `Player ${board[a]} wins!`;
       winSound.play();
       isGameOver = true;
+
       if (board[a] === 'X') scoreX++;
       else scoreO++;
+
       updateScore();
       return;
     }
   }
+
   if (!board.includes('')) {
     message.textContent = "It's a tie!";
     tieSound.play();
@@ -88,106 +112,76 @@ function checkWinner() {
   }
 }
 
-// Update score
 function updateScore() {
   document.getElementById('scoreX').textContent = scoreX;
   document.getElementById('scoreO').textContent = scoreO;
 }
 
-// Smart AI
+function updateTurn() {
+  if (!isGameOver) turnDisplay.textContent = `Current turn: ${currentPlayer}`;
+  else turnDisplay.textContent = '';
+}
+
+// Reset game
+resetButton.addEventListener('click', resetGame);
+restartMatchBtn.addEventListener('click', resetMatch);
+
+function resetBoard() {
+  board.fill('');
+  cells.forEach(cell => {
+    cell.querySelector('span').textContent = '';
+    cell.classList.remove('winning');
+  });
+  isGameOver = false;
+  message.textContent = '';
+}
+
+function resetGame() {
+  scoreX = 0;
+  scoreO = 0;
+  updateScore();
+  resetBoard();
+  currentPlayer = playerSymbol;
+  updateTurn();
+}
+
+// Restart match keeps score but clears board
+function resetMatch() {
+  resetBoard();
+  currentPlayer = playerSymbol;
+  updateTurn();
+}
+
+// Simple AI
 function computerMove() {
   if (isGameOver) return;
-  let move = findBestMove(aiSymbol) || findBestMove(playerSymbol) || (board[4]===''?4:null);
+
+  let move = findWinningMove(aiSymbol) || findWinningMove(playerSymbol) || (board[4] === '' ? 4 : null);
+
   if (!move) {
-    const corners = [0,2,6,8].filter(i=>board[i]==='');
-    move = corners.length ? corners[Math.floor(Math.random()*corners.length)] : null;
+    const corners = [0, 2, 6, 8].filter(i => board[i] === '');
+    move = corners.length ? corners[Math.floor(Math.random() * corners.length)] : null;
   }
+
   if (!move) {
-    const empty = board.map((v,i)=>v===''?i:null).filter(v=>v!==null);
-    move = empty.length ? empty[Math.floor(Math.random()*empty.length)] : null;
+    const empty = board.map((v, i) => v === '' ? i : null).filter(v => v !== null);
+    move = empty.length ? empty[Math.floor(Math.random() * empty.length)] : null;
   }
-  if (move!==null) {
-    board[move] = aiSymbol;
-    cells[move].textContent = aiSymbol;
-    cells[move].style.color = aiSymbol==='X'?'red':'blue';
+
+  if (move !== null) {
+    makeMove(cells[move], move, aiSymbol);
     checkWinner();
     currentPlayer = playerSymbol;
     updateTurn();
   }
 }
 
-function findBestMove(player) {
+function findWinningMove(player) {
   for (let combo of winningCombinations) {
-    const [a,b,c] = combo;
+    const [a, b, c] = combo;
     const line = [board[a], board[b], board[c]];
-    if (line.filter(v=>v===player).length===2 && line.includes('')) return combo[line.indexOf('')];
+    if (line.filter(v => v === player).length === 2 && line.includes('')) return combo[line.indexOf('')];
   }
   return null;
 }
-
-// Update turn
-function updateTurn() {
-  if (!isGameOver) turnDisplay.textContent = `Current turn: ${currentPlayer}`;
-  else turnDisplay.textContent = '';
-}
-
-// Handle clicks
-cells.forEach(cell => {
-  cell.addEventListener('click', () => {
-    const index = cell.dataset.index;
-    if (board[index]==='' && !isGameOver) {
-      board[index] = currentPlayer;
-      cell.textContent = currentPlayer;
-      cell.style.color = currentPlayer==='X'?'red':'blue';
-      clickSound.play();
-
-      checkWinner();
-
-      if (!isGameOver) {
-        if (mode==='two') {
-          currentPlayer = currentPlayer==='X'?'O':'X';
-          updateTurn();
-        } else if (mode==='ai' && currentPlayer===playerSymbol) {
-          currentPlayer = aiSymbol;
-          updateTurn();
-          setTimeout(computerMove, 300);
-        }
-      }
-    }
-  });
-});
-
-// Reset game
-resetButton.addEventListener('click', resetGame);
-
-function resetGame() {
-  board = ['', '', '', '', '', '', '', '', ''];
-  cells.forEach(cell => {
-    cell.textContent = '';
-    cell.style.backgroundColor = '#ffffff';
-    cell.classList.remove('winning');
-  });
-  message.textContent = '';
-  currentPlayer = playerSymbol; // Maintain chosen symbol
-  isGameOver = false;
-  updateTurn();
-
-  // If player chose O and mode is AI, AI moves first
-  if (mode === 'ai' && playerSymbol === 'O') {
-    currentPlayer = aiSymbol;
-    updateTurn();
-    setTimeout(computerMove, 300);
-  }
-}
-
-// Restart match
-restartMatchBtn.addEventListener('click', () => {
-  scoreX = 0;
-  scoreO = 0;
-  updateScore();
-  resetGame();
-  gameDiv.style.display = 'none';
-  symbolChoiceDiv.style.display = 'block';
-});
-
 
