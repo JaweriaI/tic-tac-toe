@@ -165,33 +165,40 @@ function checkWinForMinimax(b,player){
 // Buttons
 twoPlayerBtn.addEventListener("click", ()=>{
   gameMode="two-player";
-  symbolChoiceEl.classList.remove("hidden");
+  currentPlayer = "X";          // start with X
+  symbolChoiceEl.classList.add("hidden"); 
   difficultyChoiceEl.classList.add("hidden");
+  colorChoiceEl.classList.remove("hidden");
+  createBoard();
 });
 
 vsAIBtn.addEventListener("click", ()=>{
   gameMode="vs-ai";
   symbolChoiceEl.classList.remove("hidden");
+  difficultyChoiceEl.classList.add("hidden");
+  colorChoiceEl.classList.add("hidden");
 });
 
 chooseXBtn.addEventListener("click", ()=>{
-  playerSymbol="X"; aiSymbol="O"; currentPlayer=playerSymbol;
+  playerSymbol = "X";
+  aiSymbol = "O";
   symbolChoiceEl.classList.add("hidden");
-  if(gameMode==="vs-ai") difficultyChoiceEl.classList.remove("hidden");
-  else createBoard();
+  difficultyChoiceEl.classList.remove("hidden");
 });
 
 chooseOBtn.addEventListener("click", ()=>{
-  playerSymbol="O"; aiSymbol="X"; currentPlayer=playerSymbol;
+  playerSymbol = "O";
+  aiSymbol = "X";
   symbolChoiceEl.classList.add("hidden");
-  if(gameMode==="vs-ai") difficultyChoiceEl.classList.remove("hidden");
-  else createBoard();
+  difficultyChoiceEl.classList.remove("hidden");
 });
 
 easyBtn.addEventListener("click", ()=>{
   aiDifficulty="easy";
   difficultyChoiceEl.classList.add("hidden");
   colorChoiceEl.classList.remove("hidden");
+  board.fill("");
+  gameOver=false;
   createBoard();
 });
 
@@ -199,13 +206,15 @@ hardBtn.addEventListener("click", ()=>{
   aiDifficulty="hard";
   difficultyChoiceEl.classList.add("hidden");
   colorChoiceEl.classList.remove("hidden");
+  board.fill("");
+  gameOver=false;
   createBoard();
 });
 
 applyColorsBtn.addEventListener("click", ()=>{
-  colorX=colorXInput.value;
-  colorO=colorOInput.value;
-  colorBoard=colorBoardInput.value;
+  colorX = colorXInput.value;
+  colorO = colorOInput.value;
+  colorBoard = colorBoardInput.value;
   createBoard();
 });
 
@@ -217,6 +226,7 @@ resetBtn.addEventListener("click", ()=>{
 
 loadScores();
 createBoard();
+
 
 
 
