@@ -16,8 +16,8 @@
 
   <div id="symbol-choice" class="hidden">
     <p>Choose your symbol:</p>
-    <button id="choose-x-btn">X</button>
-    <button id="choose-o-btn">O</button>
+    <button id="choose-x">X</button>
+    <button id="choose-o">O</button>
   </div>
 
   <div id="difficulty-choice" class="hidden">
@@ -28,24 +28,26 @@
 
   <div id="color-choice" class="hidden">
     <p>Choose colors:</p>
-    X: <input type="color" id="color-x" value="#FF0000">
-    O: <input type="color" id="color-o" value="#0000FF">
-    Board: <input type="color" id="color-board" value="#FFFFFF">
-    <button id="apply-colors-btn">Apply</button>
-  </div>
-
-  <div id="scores">
-    <p>X: <span id="score-x">0</span> | O: <span id="score-o">0</span> | Tie: <span id="score-tie">0</span></p>
-    <button id="reset-btn">Reset Scores</button>
+    <label>X color: <input type="color" id="color-x" value="#ff0000"></label>
+    <label>O color: <input type="color" id="color-o" value="#0000ff"></label>
+    <label>Board color: <input type="color" id="color-board" value="#eee"></label>
+    <button id="apply-colors">Apply</button>
   </div>
 
   <div id="board-container">
     <div id="board"></div>
   </div>
 
+  <div id="scores">
+    <p>X: <span id="score-x">0</span> | O: <span id="score-o">0</span> | Tie: <span id="score-tie">0</span></p>
+    <button id="reset-scores">Reset Scores</button>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
+
+
 
 
 
