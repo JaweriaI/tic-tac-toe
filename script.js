@@ -149,7 +149,69 @@ function minimax(newBoard, player) {
   for (let i=0;i<availSpots.length;i++) {
     const move = {};
     move.index = availSpots[i];
-    newBoard[availSpots
+    newBoard[availSpots[i]] = player;
+
+    if (player === aiSymbol) move.score = minimax(newBoard, playerSymbol).score;
+    else move.score = minimax(newBoard, aiSymbol).score;
+
+    newBoard[availSpots[i]] = "";
+    moves.push(move);
+  }
+
+  let bestMove;
+  if (player === aiSymbol) {
+    let bestScore = -Infinity;
+    moves.forEach(m=>{ if(m.score>bestScore){ bestScore=m.score; bestMove=m; } });
+    return bestMove;
+  } else {
+    let bestScore = Infinity;
+    moves.forEach(m=>{ if(m.score<bestScore){ bestScore=m.score; bestMove=m; } });
+    return bestMove;
+  }
+}
+
+twoPlayerBtn.addEventListener("click", ()=>{
+  gameMode = "two-player";
+  symbolChoiceEl.style.display = "none";
+  difficultyChoiceEl.style.display = "none";
+  resetBoard();
+});
+
+vsAIBtn.addEventListener("click", ()=>{
+  gameMode = "vs-ai";
+  symbolChoiceEl.style.display = "block";
+  difficultyChoiceEl.style.display = "none";
+});
+
+chooseXBtn.addEventListener("click", ()=>{
+  playerSymbol = "X"; aiSymbol = "O";
+  difficultyChoiceEl.style.display = "block";
+  symbolChoiceEl.style.display = "none";
+  resetBoard();
+});
+
+chooseOBtn.addEventListener("click", ()=>{
+  playerSymbol = "O"; aiSymbol = "X";
+  difficultyChoiceEl.style.display = "block";
+  symbolChoiceEl.style.display = "none";
+  resetBoard();
+});
+
+easyBtn.addEventListener("click", ()=>{
+  aiDifficulty = "easy";
+  resetBoard();
+});
+
+hardBtn.addEventListener("click", ()=>{
+  aiDifficulty = "hard";
+  resetBoard();
+});
+
+resetBtn.addEventListener("click", resetBoard);
+
+createBoard();
+updateScores();
+
 
 
 
