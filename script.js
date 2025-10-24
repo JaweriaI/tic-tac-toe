@@ -117,7 +117,10 @@ function handleCellClick(i){
     showOverlay(`Player ${currentPlayer} Wins!`);
     return;
   } else if(board.every(c=>c!=="")){
-    tieScore++; saveScores(); updateScores(); gameOver=true;
+    tieScore++;
+    saveScores();
+    updateScores();
+    gameOver=true;
     showOverlay("It's a Tie!");
     return;
   }
@@ -155,12 +158,15 @@ function aiMove(){
       gameOver=true;
       showOverlay(`${aiSymbol} Wins!`);
     } else if(board.every(c=>c!=="")){
-      tieScore++; saveScores(); updateScores(); gameOver=true;
+      tieScore++;
+      saveScores();
+      updateScores();
+      gameOver=true;
       showOverlay("It's a Tie!");
     }
 
     currentPlayer = playerSymbol;
-  },500);
+  },300);
 }
 
 function updateScore(player){
@@ -192,7 +198,7 @@ function loadScores(){
 function resetBoard(){
   board = ["","","","","","","","",""];
   gameOver = false;
-  currentPlayer = playerSymbol;
+  currentPlayer = (gameMode==="vs-ai") ? playerSymbol : "X";
   document.querySelectorAll(".cell").forEach(c=>c.classList.remove("winning"));
   createBoard();
 }
@@ -211,6 +217,7 @@ vsAIBtn.addEventListener("click",()=>{
   gameMode="vs-ai";
   symbolChoiceEl.style.display="block";
   difficultyChoiceEl.style.display="none";
+  colorChoiceEl.style.display="none";
 });
 
 chooseXBtn.addEventListener("click",()=>{
@@ -290,10 +297,6 @@ function checkWinForMinimax(b,player){
 // Initialize
 loadScores();
 createBoard();
-
-
-
-
 
 
 
