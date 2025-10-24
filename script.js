@@ -79,10 +79,41 @@ function aiMove() {
   cellEl.classList.remove("x","o");
   cellEl.classList.add(aiSymbol.toLowerCase());
 
-  checkWin(ai
+  checkWin(aiSymbol);
+}
 
+// Check for win
+function checkWin(symbol) {
+  let won = false;
+  winningCombos.forEach(combo => {
+    if (combo.every(index => board[index] === symbol)) {
+      won = true;
+      combo.forEach(index => boardEl.children[index].classList.add("winning"));
+    }
+  });
+  return won;
+}
 
+// Reset game
+resetBtn.addEventListener("click", () => {
+  board = Array(9).fill("");
+  currentPlayer = playerSymbol;
+  gameOver = false;
+  initBoard();
+});
 
+// Mode selection
+modeBtns.twoPlayer.addEventListener("click", () => {
+  gameMode = "two-player";
+  symbolChoiceEl.style.display = "none";
+  currentPlayer = "X";
+  playerSymbol = "X";
+  aiSymbol = "O";
+  resetBtn.click();
+});
+
+modeBtns.vsAI.addEventListener("click", () => {
+  gameMod
 
 
 
