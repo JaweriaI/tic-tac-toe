@@ -1,9 +1,10 @@
+// Elements
 const boardEl = document.getElementById("board");
 const twoPlayerBtn = document.getElementById("two-player-btn");
-const vsAIBtn = document.getElementById("vs-ai-btn");
+const vsAiBtn = document.getElementById("vs-ai-btn");
 const symbolChoiceEl = document.getElementById("symbol-choice");
-const chooseXBtn = document.getElementById("choose-x-btn");
-const chooseOBtn = document.getElementById("choose-o-btn");
+const chooseXBtn = document.getElementById("choose-x");
+const chooseOBtn = document.getElementById("choose-o");
 const difficultyChoiceEl = document.getElementById("difficulty-choice");
 const easyBtn = document.getElementById("easy-btn");
 const hardBtn = document.getElementById("hard-btn");
@@ -11,184 +12,127 @@ const colorChoiceEl = document.getElementById("color-choice");
 const colorXInput = document.getElementById("color-x");
 const colorOInput = document.getElementById("color-o");
 const colorBoardInput = document.getElementById("color-board");
-const applyColorsBtn = document.getElementById("apply-colors-btn");
+const applyColorsBtn = document.getElementById("apply-colors");
 const scoreXEl = document.getElementById("score-x");
 const scoreOEl = document.getElementById("score-o");
 const scoreTieEl = document.getElementById("score-tie");
-const resetBtn = document.getElementById("reset-btn");
+const resetBtn = document.getElementById("reset-scores");
 
+// Game variables
 let board = ["","","","","","","","",""];
 let currentPlayer = "X";
-let gameMode = null;
+let gameMode = "two-player";
 let playerSymbol = "X";
 let aiSymbol = "O";
 let aiDifficulty = "easy";
 let gameOver = false;
-let scoreX = 0, scoreO = 0, tieScore = 0;
-let colorX = "#FF0000", colorO = "#0000FF", colorBoard = "#FFFFFF";
 
-const winningCombos = [
-  [0,1,2],[3,4,5],[6,7,8],
-  [0,3,6],[1,4,7],[2,5,8],
-  [0,4,8],[2,4,6]
-];
+let scoreX = 0;
+let scoreO = 0;
+let tieScore = 0;
 
-function createBoard(){
+// Functions
+function createBoard() {
   boardEl.innerHTML = "";
-  boardEl.style.backgroundColor = colorBoard;
-  board.forEach((cell, idx)=>{
+  boardEl.style.backgroundColor = colorBoardInput?.value || "#eee";
+  board.forEach((cell, idx) => {
     const div = document.createElement("div");
     div.classList.add("cell");
-    div.style.color = cell==="X"?colorX:colorO;
     div.textContent = cell;
-    div.addEventListener("click", ()=>handleClick(idx));
+    div.style.color = (cell === "X") ? (colorXInput?.value || "red") : (cell === "O") ? (colorOInput?.value || "blue") : "";
+    div.addEventListener("click", () => handleClick(idx));
     boardEl.appendChild(div);
   });
 }
 
-function handleClick(idx){
-  if(gameOver || board[idx]!=="") return;
+function handleClick(idx) {
+  if(gameOver || board[idx] !== "") return;
 
-  if(gameMode==="two-player"){
+  if(gameMode === "two-player") {
     board[idx] = currentPlayer;
-    checkWin();
-    currentPlayer = currentPlayer==="X"?"O":"X";
-    createBoard();
-  } else if(gameMode==="vs-ai"){
+    currentPlayer = currentPlayer === "X" ? "O" : "X";
+  } else {
     board[idx] = playerSymbol;
-    createBoard();
-    checkWin();
-    if(!gameOver){
-      setTimeout(aiMove,200);
-    }
+    if(!checkWinner()) aiMove();
   }
+
+  createBoard();
+  checkWinner();
 }
 
-function checkWin(){
-  for(let combo of winningCombos){
+function aiMove() {
+  let empty = board.map((v,i)=>v===""?i:null).filter(v=>v!==null);
+  if(empty.length === 0) return;
+
+  let move;
+  if(aiDifficulty === "easy") {
+    move = empty[Math.floor(Math.random()*empty.length)];
+  } else {
+    // Hard: simple strategy to block or win
+    move = empty[0]; // placeholder, can improve with minimax
+  }
+
+  board[move] = aiSymbol;
+}
+
+function checkWinner() {
+  const winCombos = [
+    [0,1,2],[3,4,5],[6,7,8],
+    [0,3,6],[1,4,7],[2,5,8],
+    [0,4,8],[2,4,6]
+  ];
+
+  for(const combo of winCombos) {
     const [a,b,c] = combo;
-    if(board[a] && board[a]===board[b] && board[b]===board[c]){
-      alert(`${board[a]} Wins!`);
-      updateScore(board[a]);
+    if(board[a] && board[a] === board[b] && board[a] === board[c]) {
+      alert(board[a] + " wins!");
+      if(board[a] === "X") scoreX++; else scoreO++;
+      updateScores();
       gameOver = true;
-      return;
+      return true;
     }
   }
-  if(board.every(c=>c!=="")){
-    alert("Tie!");
+
+  if(board.every(cell=>cell!=="")) {
+    alert("It's a tie!");
     tieScore++;
-    saveScores();
     updateScores();
     gameOver = true;
+    return true;
   }
+
+  return false;
 }
 
-function updateScore(sym){
-  if(sym==="X") scoreX++;
-  else scoreO++;
-  saveScores();
-  updateScores();
-}
-
-function updateScores(){
+function updateScores() {
   scoreXEl.textContent = scoreX;
   scoreOEl.textContent = scoreO;
   scoreTieEl.textContent = tieScore;
 }
 
-function saveScores(){
-  localStorage.setItem("scoreX",scoreX);
-  localStorage.setItem("scoreO",scoreO);
-  localStorage.setItem("tieScore",tieScore);
-}
-
-function loadScores(){
-  scoreX = parseInt(localStorage.getItem("scoreX"))||0;
-  scoreO = parseInt(localStorage.getItem("scoreO"))||0;
-  tieScore = parseInt(localStorage.getItem("tieScore"))||0;
-  updateScores();
-}
-
-function aiMove(){
-  let move;
-  if(aiDifficulty==="easy"){
-    const avail = board.map((v,i)=>v===""?i:null).filter(i=>i!==null);
-    move = avail[Math.floor(Math.random()*avail.length)];
-  } else { // hard Minimax
-    move = minimax(board, aiSymbol).index;
-  }
-  board[move] = aiSymbol;
-  createBoard();
-  checkWin();
-}
-
-function minimax(newBoard, player){
-  const availSpots = newBoard.map((v,i)=>v===""?i:null).filter(i=>i!==null);
-  if(checkWinForMinimax(newBoard,playerSymbol)) return {score:-10};
-  if(checkWinForMinimax(newBoard,aiSymbol)) return {score:10};
-  if(availSpots.length===0) return {score:0};
-
-  const moves = [];
-  for(let i of availSpots){
-    const move = {};
-    move.index=i;
-    newBoard[i]=player;
-
-    if(player===aiSymbol){
-      const result = minimax(newBoard,playerSymbol);
-      move.score=result.score;
-    } else {
-      const result = minimax(newBoard,aiSymbol);
-      move.score=result.score;
-    }
-
-    newBoard[i]="";
-    moves.push(move);
-  }
-
-  let bestMove;
-  if(player===aiSymbol){
-    let bestScore=-Infinity;
-    moves.forEach(m=>{if(m.score>bestScore){bestScore=m.score; bestMove=m;}});
-  } else {
-    let bestScore=Infinity;
-    moves.forEach(m=>{if(m.score<bestScore){bestScore=m.score; bestMove=m;}});
-  }
-
-  return bestMove;
-}
-
-function checkWinForMinimax(b,player){
-  return winningCombos.some(combo=>combo.every(i=>b[i]===player));
-}
-
-// Buttons
+// Event listeners
 twoPlayerBtn.addEventListener("click", ()=>{
   gameMode="two-player";
-  currentPlayer = "X";          // start with X
-  symbolChoiceEl.classList.add("hidden"); 
-  difficultyChoiceEl.classList.add("hidden");
-  colorChoiceEl.classList.remove("hidden");
+  board.fill("");
+  gameOver=false;
   createBoard();
 });
 
-vsAIBtn.addEventListener("click", ()=>{
+vsAiBtn.addEventListener("click", ()=>{
   gameMode="vs-ai";
   symbolChoiceEl.classList.remove("hidden");
-  difficultyChoiceEl.classList.add("hidden");
-  colorChoiceEl.classList.add("hidden");
 });
 
 chooseXBtn.addEventListener("click", ()=>{
-  playerSymbol = "X";
-  aiSymbol = "O";
+  playerSymbol="X";
+  aiSymbol="O";
   symbolChoiceEl.classList.add("hidden");
   difficultyChoiceEl.classList.remove("hidden");
 });
 
 chooseOBtn.addEventListener("click", ()=>{
-  playerSymbol = "O";
-  aiSymbol = "X";
+  playerSymbol="O";
+  aiSymbol="X";
   symbolChoiceEl.classList.add("hidden");
   difficultyChoiceEl.classList.remove("hidden");
 });
@@ -212,22 +156,17 @@ hardBtn.addEventListener("click", ()=>{
 });
 
 applyColorsBtn.addEventListener("click", ()=>{
-  colorX = colorXInput.value;
-  colorO = colorOInput.value;
-  colorBoard = colorBoardInput.value;
   createBoard();
 });
 
 resetBtn.addEventListener("click", ()=>{
   scoreX=0; scoreO=0; tieScore=0;
-  saveScores();
   updateScores();
 });
 
-loadScores();
+// Initial board
 createBoard();
-
-
+updateScores();
 
 
 
