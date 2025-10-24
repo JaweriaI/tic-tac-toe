@@ -9,33 +9,51 @@
 <body>
   <h1>Tic Tac Toe</h1>
 
-  <div>
-    <label>
-      <input type="radio" name="mode" value="ai" checked> Play vs AI
-    </label>
-    <label>
-      <input type="radio" name="mode" value="two"> Two Player
-    </label>
+  <!-- Symbol selection -->
+  <div id="symbol-choice">
+    <p>Choose your symbol:</p>
+    <button id="chooseX">X</button>
+    <button id="chooseO">O</button>
   </div>
 
-  <p id="message"></p>
-  <p id="turn">Current turn: X</p>
-  <p>Score: X = <span id="scoreX">0</span>, O = <span id="scoreO">0</span></p>
+  <!-- Game board -->
+  <div id="game" style="display:none;">
+    <div>
+      <label>
+        <input type="radio" name="mode" value="ai" checked> Play vs AI
+      </label>
+      <label>
+        <input type="radio" name="mode" value="two"> Two Player
+      </label>
+    </div>
 
-  <div class="board">
-    <div class="cell" data-index="0"></div>
-    <div class="cell" data-index="1"></div>
-    <div class="cell" data-index="2"></div>
-    <div class="cell" data-index="3"></div>
-    <div class="cell" data-index="4"></div>
-    <div class="cell" data-index="5"></div>
-    <div class="cell" data-index="6"></div>
-    <div class="cell" data-index="7"></div>
-    <div class="cell" data-index="8"></div>
+    <p id="message"></p>
+    <p id="turn">Current turn: X</p>
+    <p>Score: X = <span id="scoreX">0</span>, O = <span id="scoreO">0</span></p>
+
+    <div class="board">
+      <div class="cell" data-index="0"></div>
+      <div class="cell" data-index="1"></div>
+      <div class="cell" data-index="2"></div>
+      <div class="cell" data-index="3"></div>
+      <div class="cell" data-index="4"></div>
+      <div class="cell" data-index="5"></div>
+      <div class="cell" data-index="6"></div>
+      <div class="cell" data-index="7"></div>
+      <div class="cell" data-index="8"></div>
+    </div>
+
+    <button id="reset">Reset Game</button>
+    <button id="restartMatch">Restart Match</button>
   </div>
 
-  <button id="reset">Reset Game</button>
+  <!-- Audio -->
+  <audio id="clickSound" src="click.mp3"></audio>
+  <audio id="winSound" src="win.mp3"></audio>
+  <audio id="tieSound" src="tie.mp3"></audio>
 
   <script src="script.js"></script>
 </body>
 </html>
+
+
