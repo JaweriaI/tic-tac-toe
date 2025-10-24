@@ -9,7 +9,7 @@
 <body>
   <h1>Tic Tac Toe</h1>
 
-  <div id="controls">
+  <div id="game-options">
     <button id="two-player">Two Player</button>
     <button id="vs-ai">Play vs AI</button>
   </div>
@@ -21,25 +21,34 @@
   </div>
 
   <div id="difficulty-choice" style="display:none;">
-    <p>Choose difficulty:</p>
+    <p>Choose AI difficulty:</p>
     <button id="easy">Easy</button>
     <button id="hard">Hard</button>
   </div>
 
-  <div id="game"></div>
-
-  <div id="scores">
-    <p>Player X: <span id="score-x">0</span> | Player O: <span id="score-o">0</span> | Ties: <span id="score-tie">0</span></p>
+  <div id="scoreboard">
+    <p>Player X: <span id="score-x">0</span></p>
+    <p>Player O: <span id="score-o">0</span></p>
+    <p>Ties: <span id="score-tie">0</span></p>
   </div>
 
-  <button id="reset">Reset Board</button>
+  <div id="board"></div>
 
-  <audio id="win-sound" src="win-sound.mp3" preload="auto"></audio>
+  <button id="reset">Reset Scores & Board</button>
 
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Overlay for result -->
+  <div id="overlay" style="display:none;">
+    <div id="overlay-content">
+      <h2 id="overlay-message"></h2>
+      <button id="overlay-reset">Play Again</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
+
 
 
 
