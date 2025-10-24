@@ -174,4 +174,3 @@ function findWinningMove(player) {
   }
   return null;
 }
-
