@@ -10,10 +10,6 @@ const chooseOBtn = document.getElementById('chooseO');
 const symbolChoiceDiv = document.getElementById('symbol-choice');
 const gameDiv = document.getElementById('game');
 
-const clickSound = document.getElementById('clickSound');
-const winSound = document.getElementById('winSound');
-const tieSound = document.getElementById('tieSound');
-
 let board = Array(9).fill('');
 let playerSymbol = 'X';
 let aiSymbol = 'O';
@@ -81,7 +77,6 @@ function makeMove(cell, index, player) {
   board[index] = player;
   cell.querySelector('span').textContent = player;
   cell.querySelector('span').style.color = player === 'X' ? 'red' : 'blue';
-  if(clickSound) clickSound.play();
 }
 
 function checkWinner() {
@@ -93,7 +88,6 @@ function checkWinner() {
       cells[c].classList.add('winning');
 
       message.textContent = `Player ${board[a]} wins!`;
-      if(winSound) winSound.play();
       isGameOver = true;
 
       if (board[a] === 'X') scoreX++;
@@ -106,7 +100,6 @@ function checkWinner() {
 
   if (!board.includes('')) {
     message.textContent = "It's a tie!";
-    if(tieSound) tieSound.play();
     isGameOver = true;
   }
 }
@@ -181,6 +174,4 @@ function findWinningMove(player) {
   }
   return null;
 }
-
-
 
