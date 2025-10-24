@@ -7,8 +7,8 @@ html, body {
 
 body {
   display: flex;
-  justify-content: center;  /* horizontal center */
-  align-items: center;      /* vertical center */
+  justify-content: center;
+  align-items: center;
   flex-direction: column;
   text-align: center;
 }
@@ -29,8 +29,6 @@ h1 {
   grid-template-columns: repeat(3, 100px);
   grid-template-rows: repeat(3, 100px);
   gap: 5px;
-  background-color: #fff;
-  padding: 5px;
 }
 
 .cell {
@@ -58,6 +56,7 @@ button {
 #scores {
   margin-top: 15px;
 }
+
 
 
 
