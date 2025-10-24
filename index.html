@@ -3,42 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Modern Tic Tac Toe</title>
+  <title>Tic Tac Toe</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <h1>Tic Tac Toe</h1>
 
-  <h1>🎮 Tic Tac Toe</h1>
-
-  <!-- Scoreboard -->
-  <div id="scoreboard">
-    <span id="player-score">Player: 0</span> |
-    <span id="ai-score">AI: 0</span> |
-    <span id="tie-score">Ties: 0</span>
-  </div>
-
-  <!-- Mode selection: 2-player or vs AI -->
-  <div id="mode-selection">
-    <span>Select Mode:</span>
-    <button id="two-player">2 Players</button>
+  <div id="controls">
+    <button id="two-player">Two Player</button>
     <button id="vs-ai">Play vs AI</button>
   </div>
 
-  <!-- Symbol choice (X or O) -->
   <div id="symbol-choice" style="display:none;">
-    <span>Choose your symbol:</span>
+    <p>Choose your symbol:</p>
     <button id="choose-x">X</button>
     <button id="choose-o">O</button>
   </div>
 
-  <!-- Tic Tac Toe Board -->
-  <div id="board"></div>
-
-  <!-- Controls -->
-  <div id="controls">
-    <button id="reset">Restart Game</button>
+  <div id="difficulty-choice" style="display:none;">
+    <p>Choose difficulty:</p>
+    <button id="easy">Easy</button>
+    <button id="hard">Hard</button>
   </div>
 
+  <div id="game"></div>
+
+  <div id="scores">
+    <p>Player X: <span id="score-x">0</span> | Player O: <span id="score-o">0</span> | Ties: <span id="score-tie">0</span></p>
+  </div>
+
+  <button id="reset">Reset Board</button>
+
+  <audio id="win-sound" src="win-sound.mp3" preload="auto"></audio>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
