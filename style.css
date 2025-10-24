@@ -10,9 +10,10 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  gap: 10px;
-  max-width: 300px;
+  width: 300px;
+  height: 300px;
   margin: 20px auto;
+  gap: 10px;
 }
 
 .cell {
@@ -23,7 +24,6 @@ body {
   align-items: center;
   justify-content: center;
   font-size: 2rem;
-  aspect-ratio: 1 / 1; /* ensures perfectly square cells */
 }
 
 .cell span {
@@ -32,6 +32,7 @@ body {
   height: 100%;
   line-height: 1;
   font-weight: bold;
+  text-align: center;
 }
 
 .cell:hover {
@@ -59,5 +60,4 @@ body {
 #mode-selection {
   margin-top: 15px;
 }
-
 
