@@ -14,7 +14,7 @@ const clickSound = document.getElementById('clickSound');
 const winSound = document.getElementById('winSound');
 const tieSound = document.getElementById('tieSound');
 
-let board = ['', '', '', '', '', '', '', '', ''];
+let board = Array(9).fill('');
 let playerSymbol = 'X';
 let aiSymbol = 'O';
 let currentPlayer = 'X';
@@ -61,7 +61,6 @@ cells.forEach(cell => {
     const index = cell.dataset.index;
     if (board[index] === '' && !isGameOver) {
       makeMove(cell, index, currentPlayer);
-
       checkWinner();
 
       if (!isGameOver) {
@@ -82,19 +81,19 @@ function makeMove(cell, index, player) {
   board[index] = player;
   cell.querySelector('span').textContent = player;
   cell.querySelector('span').style.color = player === 'X' ? 'red' : 'blue';
-  clickSound.play();
+  if(clickSound) clickSound.play();
 }
 
 function checkWinner() {
   for (let combo of winningCombinations) {
-    const [a, b, c] = combo;
+    const [a,b,c] = combo;
     if (board[a] && board[a] === board[b] && board[a] === board[c]) {
       cells[a].classList.add('winning');
       cells[b].classList.add('winning');
       cells[c].classList.add('winning');
 
       message.textContent = `Player ${board[a]} wins!`;
-      winSound.play();
+      if(winSound) winSound.play();
       isGameOver = true;
 
       if (board[a] === 'X') scoreX++;
@@ -107,7 +106,7 @@ function checkWinner() {
 
   if (!board.includes('')) {
     message.textContent = "It's a tie!";
-    tieSound.play();
+    if(tieSound) tieSound.play();
     isGameOver = true;
   }
 }
@@ -122,7 +121,6 @@ function updateTurn() {
   else turnDisplay.textContent = '';
 }
 
-// Reset game
 resetButton.addEventListener('click', resetGame);
 restartMatchBtn.addEventListener('click', resetMatch);
 
@@ -145,7 +143,6 @@ function resetGame() {
   updateTurn();
 }
 
-// Restart match keeps score but clears board
 function resetMatch() {
   resetBoard();
   currentPlayer = playerSymbol;
@@ -164,8 +161,8 @@ function computerMove() {
   }
 
   if (!move) {
-    const empty = board.map((v, i) => v === '' ? i : null).filter(v => v !== null);
-    move = empty.length ? empty[Math.floor(Math.random() * empty.length)] : null;
+    const empty = board.map((v,i)=>v===''?i:null).filter(v=>v!==null);
+    move = empty.length ? empty[Math.floor(Math.random()*empty.length)] : null;
   }
 
   if (move !== null) {
@@ -178,10 +175,12 @@ function computerMove() {
 
 function findWinningMove(player) {
   for (let combo of winningCombinations) {
-    const [a, b, c] = combo;
+    const [a,b,c] = combo;
     const line = [board[a], board[b], board[c]];
-    if (line.filter(v => v === player).length === 2 && line.includes('')) return combo[line.indexOf('')];
+    if (line.filter(v => v===player).length === 2 && line.includes('')) return combo[line.indexOf('')];
   }
   return null;
 }
+
+
 
