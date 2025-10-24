@@ -9,6 +9,12 @@ const easyBtn = document.getElementById("easy");
 const hardBtn = document.getElementById("hard");
 const resetBtn = document.getElementById("reset");
 
+const colorChoiceEl = document.getElementById("color-choice");
+const colorXInput = document.getElementById("color-x");
+const colorOInput = document.getElementById("color-o");
+const colorBoardInput = document.getElementById("color-board");
+const applyColorsBtn = document.getElementById("apply-colors");
+
 const overlay = document.getElementById("overlay");
 const overlayMessage = document.getElementById("overlay-message");
 const overlayReset = document.getElementById("overlay-reset");
@@ -24,6 +30,10 @@ let playerSymbol = "X";
 let aiSymbol = "O";
 let aiDifficulty = "easy";
 let gameOver = false;
+
+let colorX = "#FF0000";
+let colorO = "#0000FF";
+let colorBoard = "#f0f0f0";
 
 let scoreX = 0, scoreO = 0, tieScore = 0;
 
@@ -57,11 +67,23 @@ function createBoard(){
     cellEl.addEventListener("click", ()=>handleCellClick(i));
     boardEl.appendChild(cellEl);
   });
+  updateBoardColors();
 }
 
 function updateCell(index, symbol){
   const cell = document.querySelector(`.cell[data-index='${index}']`);
   cell.textContent = symbol;
+  cell.style.color = symbol==="X"?colorX:colorO;
+  cell.style.backgroundColor = colorBoard;
+}
+
+function updateBoardColors(){
+  document.querySelectorAll(".cell").forEach((cell,i)=>{
+    if(board[i]!==""){
+      cell.style.color = board[i]==="X"?colorX:colorO;
+    }
+    cell.style.backgroundColor = colorBoard;
+  });
 }
 
 function checkWin(symbol){
@@ -148,67 +170,40 @@ function updateScore(player){
   updateScores();
 }
 
-function saveScores(){
-  localStorage.setItem("scoreX",scoreX);
-  localStorage.setItem("scoreO",scoreO);
-  localStorage.setItem("tieScore",tieScore);
-}
-
-function loadScores(){
-  scoreX = parseInt(localStorage.getItem("scoreX"))||0;
-  scoreO = parseInt(localStorage.getItem("scoreO"))||0;
-  tieScore = parseInt(localStorage.getItem("tieScore"))||0;
-}
-
 function updateScores(){
   scoreXEl.textContent = scoreX;
   scoreOEl.textContent = scoreO;
   scoreTieEl.textContent = tieScore;
 }
 
-function resetBoard(){
-  board = ["","","","","","","","",""];
-  gameOver=false;
-  currentPlayer="X";
-  createBoard();
-  document.querySelectorAll(".cell").forEach(c=>c.classList.remove("winning"));
+function saveScores(){
+  localStorage.setItem("tttScoreX",scoreX);
+  localStorage.setItem("tttScoreO",scoreO);
+  localStorage.setItem("tttTie",tieScore);
 }
 
-// Minimax for hard AI
-function minimax(newBoard, player){
-  const availSpots = newBoard.map((v,i)=>v===""?i:null).filter(i=>i!==null);
+function loadScores(){
+  scoreX = parseInt(localStorage.getItem("tttScoreX"))||0;
+  scoreO = parseInt(localStorage.getItem("tttScoreO"))||0;
+  tieScore = parseInt(localStorage.getItem("tttTie"))||0;
+  updateScores();
+}
 
-  if(checkWin(playerSymbol)) return {score:-10};
-  if(checkWin(aiSymbol)) return {score:10};
-  if(availSpots.length===0) return {score:0};
-
-  const moves=[];
-  for(let i=0;i<availSpots.length;i++){
-    const move={index:availSpots[i]};
-    newBoard[availSpots[i]] = player;
-    if(player===aiSymbol) move.score = minimax(newBoard,playerSymbol).score;
-    else move.score = minimax(newBoard,aiSymbol).score;
-    newBoard[availSpots[i]]="";
-    moves.push(move);
-  }
-
-  let bestMove;
-  if(player===aiSymbol){
-    let bestScore=-Infinity;
-    moves.forEach(m=>{if(m.score>bestScore){bestScore=m.score;bestMove=m;}});
-    return bestMove;
-  } else {
-    let bestScore=Infinity;
-    moves.forEach(m=>{if(m.score<bestScore){bestScore=m.score;bestMove=m;}});
-    return bestMove;
-  }
+function resetBoard(){
+  board = ["","","","","","","","",""];
+  gameOver = false;
+  currentPlayer = playerSymbol;
+  document.querySelectorAll(".cell").forEach(c=>c.classList.remove("winning"));
+  createBoard();
 }
 
 // Event Listeners
 twoPlayerBtn.addEventListener("click",()=>{
   gameMode="two-player";
+  currentPlayer="X";
   symbolChoiceEl.style.display="none";
   difficultyChoiceEl.style.display="none";
+  colorChoiceEl.style.display="block";
   resetBoard();
 });
 
@@ -220,36 +215,81 @@ vsAIBtn.addEventListener("click",()=>{
 
 chooseXBtn.addEventListener("click",()=>{
   playerSymbol="X"; aiSymbol="O";
-  difficultyChoiceEl.style.display="block";
   symbolChoiceEl.style.display="none";
-  resetBoard();
+  difficultyChoiceEl.style.display="block";
 });
 
 chooseOBtn.addEventListener("click",()=>{
   playerSymbol="O"; aiSymbol="X";
-  difficultyChoiceEl.style.display="block";
   symbolChoiceEl.style.display="none";
-  resetBoard();
+  difficultyChoiceEl.style.display="block";
 });
 
 easyBtn.addEventListener("click",()=>{
   aiDifficulty="easy";
+  difficultyChoiceEl.style.display="none";
+  colorChoiceEl.style.display="block";
   resetBoard();
 });
 
 hardBtn.addEventListener("click",()=>{
   aiDifficulty="hard";
+  difficultyChoiceEl.style.display="none";
+  colorChoiceEl.style.display="block";
   resetBoard();
 });
 
-resetBtn.addEventListener("click",()=>{
-  scoreX=0; scoreO=0; tieScore=0; saveScores(); updateScores(); resetBoard();
+applyColorsBtn.addEventListener("click",()=>{
+  colorX=colorXInput.value;
+  colorO=colorOInput.value;
+  colorBoard=colorBoardInput.value;
+  updateBoardColors();
 });
 
-// Initial load
+resetBtn.addEventListener("click",()=>{
+  scoreX=scoreO=tieScore=0;
+  saveScores();
+  updateScores();
+  resetBoard();
+});
+
+// Minimax AI
+function minimax(newBoard, player){
+  const availSpots = newBoard.map((v,i)=>v===""?i:null).filter(i=>i!==null);
+
+  if(checkWinForMinimax(newBoard, playerSymbol)) return {score:-10};
+  else if(checkWinForMinimax(newBoard, aiSymbol)) return {score:10};
+  else if(availSpots.length===0) return {score:0};
+
+  const moves=[];
+  for(let i of availSpots){
+    const move = {};
+    move.index=i;
+    newBoard[i]=player;
+    const result = minimax(newBoard, player===aiSymbol?playerSymbol:aiSymbol);
+    move.score=result.score;
+    newBoard[i]="";
+    moves.push(move);
+  }
+
+  let bestMove;
+  if(player===aiSymbol){
+    let bestScore=-Infinity;
+    moves.forEach(m=>{if(m.score>bestScore){bestScore=m.score; bestMove=m;}});
+  } else {
+    let bestScore=Infinity;
+    moves.forEach(m=>{if(m.score<bestScore){bestScore=m.score; bestMove=m;}});
+  }
+  return bestMove;
+}
+
+function checkWinForMinimax(b,player){
+  return winningCombos.some(combo=>combo.every(i=>b[i]===player));
+}
+
+// Initialize
 loadScores();
 createBoard();
-updateScores();
 
 
 
