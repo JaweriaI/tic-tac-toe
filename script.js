@@ -1,27 +1,21 @@
 const boardEl = document.getElementById("board");
-const twoPlayerBtn = document.getElementById("two-player");
-const vsAIBtn = document.getElementById("vs-ai");
+const twoPlayerBtn = document.getElementById("two-player-btn");
+const vsAIBtn = document.getElementById("vs-ai-btn");
 const symbolChoiceEl = document.getElementById("symbol-choice");
-const chooseXBtn = document.getElementById("choose-x");
-const chooseOBtn = document.getElementById("choose-o");
+const chooseXBtn = document.getElementById("choose-x-btn");
+const chooseOBtn = document.getElementById("choose-o-btn");
 const difficultyChoiceEl = document.getElementById("difficulty-choice");
-const easyBtn = document.getElementById("easy");
-const hardBtn = document.getElementById("hard");
-const resetBtn = document.getElementById("reset");
-
+const easyBtn = document.getElementById("easy-btn");
+const hardBtn = document.getElementById("hard-btn");
 const colorChoiceEl = document.getElementById("color-choice");
 const colorXInput = document.getElementById("color-x");
 const colorOInput = document.getElementById("color-o");
 const colorBoardInput = document.getElementById("color-board");
-const applyColorsBtn = document.getElementById("apply-colors");
-
-const overlay = document.getElementById("overlay");
-const overlayMessage = document.getElementById("overlay-message");
-const overlayReset = document.getElementById("overlay-reset");
-
+const applyColorsBtn = document.getElementById("apply-colors-btn");
 const scoreXEl = document.getElementById("score-x");
 const scoreOEl = document.getElementById("score-o");
 const scoreTieEl = document.getElementById("score-tie");
+const resetBtn = document.getElementById("reset-btn");
 
 let board = ["","","","","","","","",""];
 let currentPlayer = "X";
@@ -30,12 +24,8 @@ let playerSymbol = "X";
 let aiSymbol = "O";
 let aiDifficulty = "easy";
 let gameOver = false;
-
-let colorX = "#FF0000";
-let colorO = "#0000FF";
-let colorBoard = "#f0f0f0";
-
 let scoreX = 0, scoreO = 0, tieScore = 0;
+let colorX = "#FF0000", colorO = "#0000FF", colorBoard = "#FFFFFF";
 
 const winningCombos = [
   [0,1,2],[3,4,5],[6,7,8],
@@ -43,139 +33,58 @@ const winningCombos = [
   [0,4,8],[2,4,6]
 ];
 
-function showOverlay(message){
-  overlayMessage.textContent = message;
-  overlay.classList.remove("hidden");
-}
-
-function hideOverlay(){
-  overlay.classList.add("hidden");
-}
-
-overlayReset.addEventListener("click", ()=>{
-  hideOverlay();
-  resetBoard();
-});
-
 function createBoard(){
   boardEl.innerHTML = "";
-  board.forEach((cell,i)=>{
-    const cellEl = document.createElement("div");
-    cellEl.classList.add("cell");
-    cellEl.dataset.index = i;
-    cellEl.addEventListener("click", ()=>handleCellClick(i));
-    boardEl.appendChild(cellEl);
+  boardEl.style.backgroundColor = colorBoard;
+  board.forEach((cell, idx)=>{
+    const div = document.createElement("div");
+    div.classList.add("cell");
+    div.style.color = cell==="X"?colorX:colorO;
+    div.textContent = cell;
+    div.addEventListener("click", ()=>handleClick(idx));
+    boardEl.appendChild(div);
   });
-  updateBoardColors();
 }
 
-function updateCell(index, symbol){
-  const cell = document.querySelector(`.cell[data-index='${index}']`);
-  cell.textContent = symbol;
-  cell.style.color = symbol==="X"?colorX:colorO;
-  cell.style.backgroundColor = colorBoard;
-}
+function handleClick(idx){
+  if(gameOver || board[idx]!=="") return;
 
-function updateBoardColors(){
-  document.querySelectorAll(".cell").forEach((cell,i)=>{
-    if(board[i]!==""){
-      cell.style.color = board[i]==="X"?colorX:colorO;
+  if(gameMode==="two-player"){
+    board[idx] = currentPlayer;
+    checkWin();
+    currentPlayer = currentPlayer==="X"?"O":"X";
+    createBoard();
+  } else if(gameMode==="vs-ai"){
+    board[idx] = playerSymbol;
+    createBoard();
+    checkWin();
+    if(!gameOver){
+      setTimeout(aiMove,200);
     }
-    cell.style.backgroundColor = colorBoard;
-  });
-}
-
-function checkWin(symbol){
-  let won = false;
-  let winningCells = [];
-  winningCombos.forEach(combo=>{
-    if(combo.every(i=>board[i]===symbol)){
-      won = true;
-      winningCells = combo;
-    }
-  });
-  if(won){
-    winningCells.forEach(i=>{
-      document.querySelector(`.cell[data-index='${i}']`).classList.add("winning");
-    });
-    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
   }
-  return won ? winningCells : false;
 }
 
-function handleCellClick(i){
-  if(gameOver || board[i]!=="") return;
-
-  board[i] = currentPlayer;
-  updateCell(i,currentPlayer);
-
-  const result = checkWin(currentPlayer);
-  if(result){
-    updateScore(currentPlayer);
-    gameOver=true;
-    showOverlay(`Player ${currentPlayer} Wins!`);
-    return;
-  } else if(board.every(c=>c!=="")){
+function checkWin(){
+  for(let combo of winningCombos){
+    const [a,b,c] = combo;
+    if(board[a] && board[a]===board[b] && board[b]===board[c]){
+      alert(`${board[a]} Wins!`);
+      updateScore(board[a]);
+      gameOver = true;
+      return;
+    }
+  }
+  if(board.every(c=>c!=="")){
+    alert("Tie!");
     tieScore++;
     saveScores();
     updateScores();
-    gameOver=true;
-    showOverlay("It's a Tie!");
-    return;
-  }
-
-  if(gameMode==="two-player"){
-    currentPlayer = currentPlayer==="X"?"O":"X";
-  } else if(gameMode==="vs-ai"){
-    currentPlayer = aiSymbol;
-    aiMove();
+    gameOver = true;
   }
 }
 
-function aiMove(){
-  if(gameOver) return;
-
-  let moveIndex;
-  const empty = board.map((v,i)=>v===""?i:null).filter(i=>i!==null);
-
-  if(aiDifficulty==="easy"){
-    moveIndex = empty[Math.floor(Math.random()*empty.length)];
-  } else {
-    moveIndex = minimax(board, aiSymbol).index;
-  }
-
-  setTimeout(()=>{
-    board[moveIndex]=aiSymbol;
-    updateCell(moveIndex,aiSymbol);
-
-    const result = checkWin(aiSymbol);
-    if(result){
-      updateScore(aiSymbol);
-      gameOver=true;
-      showOverlay("AI Wins!");
-      return;
-    } else if(board.every(c=>c!=="")){
-      tieScore++;
-      saveScores();
-      updateScores();
-      gameOver=true;
-      showOverlay("It's a Tie!");
-      return;
-    }
-
-    currentPlayer = playerSymbol;
-  }, 200);
-}
-
-function resetBoard(){
-  board=["","","","","","","","",""];
-  currentPlayer = playerSymbol;
-  gameOver=false;
-  createBoard();
-}
-
-function updateScore(symbol){
-  if(symbol==="X") scoreX++;
+function updateScore(sym){
+  if(sym==="X") scoreX++;
   else scoreO++;
   saveScores();
   updateScores();
@@ -200,13 +109,24 @@ function loadScores(){
   updateScores();
 }
 
-// Minimax Algorithm
+function aiMove(){
+  let move;
+  if(aiDifficulty==="easy"){
+    const avail = board.map((v,i)=>v===""?i:null).filter(i=>i!==null);
+    move = avail[Math.floor(Math.random()*avail.length)];
+  } else { // hard Minimax
+    move = minimax(board, aiSymbol).index;
+  }
+  board[move] = aiSymbol;
+  createBoard();
+  checkWin();
+}
+
 function minimax(newBoard, player){
   const availSpots = newBoard.map((v,i)=>v===""?i:null).filter(i=>i!==null);
-
   if(checkWinForMinimax(newBoard,playerSymbol)) return {score:-10};
-  else if(checkWinForMinimax(newBoard,aiSymbol)) return {score:10};
-  else if(availSpots.length===0) return {score:0};
+  if(checkWinForMinimax(newBoard,aiSymbol)) return {score:10};
+  if(availSpots.length===0) return {score:0};
 
   const moves = [];
   for(let i of availSpots){
@@ -242,7 +162,7 @@ function checkWinForMinimax(b,player){
   return winningCombos.some(combo=>combo.every(i=>b[i]===player));
 }
 
-// Button Events
+// Buttons
 twoPlayerBtn.addEventListener("click", ()=>{
   gameMode="two-player";
   symbolChoiceEl.classList.remove("hidden");
@@ -255,42 +175,38 @@ vsAIBtn.addEventListener("click", ()=>{
 });
 
 chooseXBtn.addEventListener("click", ()=>{
-  playerSymbol="X";
-  aiSymbol="O";
-  currentPlayer=playerSymbol;
+  playerSymbol="X"; aiSymbol="O"; currentPlayer=playerSymbol;
   symbolChoiceEl.classList.add("hidden");
   if(gameMode==="vs-ai") difficultyChoiceEl.classList.remove("hidden");
-  else resetBoard();
+  else createBoard();
 });
 
 chooseOBtn.addEventListener("click", ()=>{
-  playerSymbol="O";
-  aiSymbol="X";
-  currentPlayer=playerSymbol;
+  playerSymbol="O"; aiSymbol="X"; currentPlayer=playerSymbol;
   symbolChoiceEl.classList.add("hidden");
   if(gameMode==="vs-ai") difficultyChoiceEl.classList.remove("hidden");
-  else resetBoard();
+  else createBoard();
 });
 
 easyBtn.addEventListener("click", ()=>{
   aiDifficulty="easy";
   difficultyChoiceEl.classList.add("hidden");
   colorChoiceEl.classList.remove("hidden");
-  resetBoard();
+  createBoard();
 });
 
 hardBtn.addEventListener("click", ()=>{
   aiDifficulty="hard";
   difficultyChoiceEl.classList.add("hidden");
   colorChoiceEl.classList.remove("hidden");
-  resetBoard();
+  createBoard();
 });
 
 applyColorsBtn.addEventListener("click", ()=>{
   colorX=colorXInput.value;
   colorO=colorOInput.value;
   colorBoard=colorBoardInput.value;
-  updateBoardColors();
+  createBoard();
 });
 
 resetBtn.addEventListener("click", ()=>{
@@ -301,6 +217,7 @@ resetBtn.addEventListener("click", ()=>{
 
 loadScores();
 createBoard();
+
 
 
 
