@@ -1,50 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tic Tac Toe</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tic Tac Toe</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
   <h1>Tic Tac Toe</h1>
 
-  <div id="game-options">
+  <div id="menu">
     <button id="two-player">Two Player</button>
     <button id="vs-ai">Play vs AI</button>
   </div>
 
-  <div id="symbol-choice" style="display:none;">
-    <p>Choose your symbol:</p>
+  <div id="symbol-choice" class="hidden">
+    <p>Choose Your Symbol:</p>
     <button id="choose-x">X</button>
     <button id="choose-o">O</button>
   </div>
 
-  <div id="difficulty-choice" style="display:none;">
-    <p>Choose AI difficulty:</p>
+  <div id="difficulty-choice" class="hidden">
+    <p>Choose AI Difficulty:</p>
     <button id="easy">Easy</button>
     <button id="hard">Hard</button>
   </div>
 
-  <div id="color-choice" style="display:none;">
-    <p>Pick colors:</p>
-    <label>X color: <input type="color" id="color-x" value="#FF0000"></label>
-    <label>O color: <input type="color" id="color-o" value="#0000FF"></label>
-    <label>Board color: <input type="color" id="color-board" value="#f0f0f0"></label>
-    <button id="apply-colors">Apply Colors</button>
+  <div id="color-choice" class="hidden">
+    <p>Choose Colors:</p>
+    <label>X Color: <input type="color" id="color-x" value="#FF0000"></label>
+    <label>O Color: <input type="color" id="color-o" value="#0000FF"></label>
+    <label>Board Color: <input type="color" id="color-board" value="#f0f0f0"></label>
+    <button id="apply-colors">Apply</button>
   </div>
 
   <div id="scoreboard">
-    <p>Player X: <span id="score-x">0</span></p>
-    <p>Player O: <span id="score-o">0</span></p>
-    <p>Ties: <span id="score-tie">0</span></p>
+    <p>X: <span id="score-x">0</span> | O: <span id="score-o">0</span> | Tie: <span id="score-tie">0</span></p>
+    <button id="reset">Reset Scores</button>
   </div>
 
   <div id="board"></div>
 
-  <button id="reset">Reset Scores & Board</button>
-
-  <div id="overlay" style="display:none;">
+  <div id="overlay" class="hidden">
     <div id="overlay-content">
       <h2 id="overlay-message"></h2>
       <button id="overlay-reset">Play Again</button>
@@ -55,6 +52,8 @@
   <script src="script.js"></script>
 </body>
 </html>
+
+
 
 
 
