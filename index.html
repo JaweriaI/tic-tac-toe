@@ -1,56 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tic Tac Toe</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="symbol-choice">
-  <h2>Choose Your Symbol</h2>
-  <button id="chooseX">X</button>
-  <button id="chooseO">O</button>
-</div>
-
-<div id="game" style="display:none">
-  <h2 id="turn">Current turn: X</h2>
-
-  <div id="board">
-    <div class="cell" data-index="0"><span></span></div>
-    <div class="cell" data-index="1"><span></span></div>
-    <div class="cell" data-index="2"><span></span></div>
-    <div class="cell" data-index="3"><span></span></div>
-    <div class="cell" data-index="4"><span></span></div>
-    <div class="cell" data-index="5"><span></span></div>
-    <div class="cell" data-index="6"><span></span></div>
-    <div class="cell" data-index="7"><span></span></div>
-    <div class="cell" data-index="8"><span></span></div>
+  <div id="symbol-choice">
+    <h2>Choose your symbol</h2>
+    <button id="chooseX">X</button>
+    <button id="chooseO">O</button>
   </div>
 
-  <p id="message"></p>
+  <div id="game" style="display:none;">
+    <h2 id="turn">Current turn: X</h2>
+    <div id="board">
+      <div class="cell" data-index="0"><span></span></div>
+      <div class="cell" data-index="1"><span></span></div>
+      <div class="cell" data-index="2"><span></span></div>
+      <div class="cell" data-index="3"><span></span></div>
+      <div class="cell" data-index="4"><span></span></div>
+      <div class="cell" data-index="5"><span></span></div>
+      <div class="cell" data-index="6"><span></span></div>
+      <div class="cell" data-index="7"><span></span></div>
+      <div class="cell" data-index="8"><span></span></div>
+    </div>
 
-  <div class="controls">
-    <button id="reset">Reset Game</button>
-    <button id="restartMatch">Restart Match</button>
+    <p id="message"></p>
+    <div id="scoreboard">
+      <p>Score X: <span id="scoreX">0</span></p>
+      <p>Score O: <span id="scoreO">0</span></p>
+    </div>
+
+    <div id="controls">
+      <button id="reset">Reset Game</button>
+      <button id="restartMatch">Restart Match</button>
+    </div>
+
+    <div id="mode-selection">
+      <label><input type="radio" name="mode" value="ai" checked> Play vs AI</label>
+      <label><input type="radio" name="mode" value="two"> Two Player</label>
+    </div>
   </div>
 
-  <div class="scoreboard">
-    <p>Score X: <span id="scoreX">0</span></p>
-    <p>Score O: <span id="scoreO">0</span></p>
-  </div>
+  <!-- Optional sounds -->
+  <audio id="clickSound" src="click.mp3"></audio>
+  <audio id="winSound" src="win.mp3"></audio>
+  <audio id="tieSound" src="tie.mp3"></audio>
 
-  <div class="mode-selection">
-    <label><input type="radio" name="mode" value="ai" checked> Play vs AI</label>
-    <label><input type="radio" name="mode" value="two"> Two Player</label>
-  </div>
-</div>
-
-<!-- Optional sounds -->
-<audio id="clickSound" src="click.mp3"></audio>
-<audio id="winSound" src="win.mp3"></audio>
-<audio id="tieSound" src="tie.mp3"></audio>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
+
+
