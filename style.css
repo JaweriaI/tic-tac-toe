@@ -1,8 +1,8 @@
 body {
   display: flex;
-  justify-content: center;
-  align-items: center;
   flex-direction: column;
+  justify-content: center;  /* vertical centering */
+  align-items: center;      /* horizontal centering */
   min-height: 100vh;
   margin: 0;
   font-family: Arial, sans-serif;
@@ -11,6 +11,9 @@ body {
 }
 
 #menu, #symbol-choice, #difficulty-choice, #color-choice, #scoreboard {
+  display: flex;
+  justify-content: center;   /* center buttons horizontally */
+  flex-wrap: wrap;
   margin: 10px 0;
 }
 
@@ -58,6 +61,8 @@ body {
   padding: 20px 40px;
   border-radius: 10px;
 }
+
+
 
 
 
