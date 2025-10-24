@@ -74,9 +74,10 @@ cells.forEach(cell => {
 });
 
 function makeMove(cell, index, player) {
-  board[index] = player;
-  cell.textContent = player;
-  cell.style.color = player === 'X' ? 'red' : 'blue';
+  const symbol = player.toUpperCase(); // ensure X or O
+  board[index] = symbol;
+  cell.textContent = symbol;
+  cell.style.color = symbol === 'X' ? 'red' : 'blue';
 }
 
 function checkWinner() {
@@ -174,5 +175,7 @@ function findWinningMove(player) {
   }
   return null;
 }
+
+
 
 
