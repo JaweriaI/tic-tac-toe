@@ -44,8 +44,15 @@ chooseOBtn.addEventListener('click', () => {
 function startGame() {
   symbolChoiceDiv.style.display = 'none';
   gameDiv.style.display = 'block';
-  currentPlayer = 'X';
+  currentPlayer = playerSymbol; // Start with player's chosen symbol
   updateTurn();
+
+  // If player chose O and mode is AI, AI starts first
+  if (mode === 'ai' && playerSymbol === 'O') {
+    currentPlayer = aiSymbol;
+    updateTurn();
+    setTimeout(computerMove, 300);
+  }
 }
 
 // Mode switch
@@ -161,9 +168,16 @@ function resetGame() {
     cell.classList.remove('winning');
   });
   message.textContent = '';
-  currentPlayer = 'X';
+  currentPlayer = playerSymbol; // Maintain chosen symbol
   isGameOver = false;
   updateTurn();
+
+  // If player chose O and mode is AI, AI moves first
+  if (mode === 'ai' && playerSymbol === 'O') {
+    currentPlayer = aiSymbol;
+    updateTurn();
+    setTimeout(computerMove, 300);
+  }
 }
 
 // Restart match
@@ -175,3 +189,5 @@ restartMatchBtn.addEventListener('click', () => {
   gameDiv.style.display = 'none';
   symbolChoiceDiv.style.display = 'block';
 });
+
+
