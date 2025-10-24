@@ -136,8 +136,9 @@ function aiMove(){
   if(gameOver) return;
 
   let moveIndex;
+  const empty = board.map((v,i)=>v===""?i:null).filter(i=>i!==null);
+
   if(aiDifficulty==="easy"){
-    const empty = board.map((v,i)=>v===""?i:null).filter(i=>i!==null);
     moveIndex = empty[Math.floor(Math.random()*empty.length)];
   } else {
     moveIndex = minimax(board, aiSymbol).index;
@@ -151,21 +152,30 @@ function aiMove(){
     if(result){
       updateScore(aiSymbol);
       gameOver=true;
-      showOverlay(`${aiSymbol} Wins!`);
+      showOverlay("AI Wins!");
+      return;
     } else if(board.every(c=>c!=="")){
       tieScore++;
       saveScores();
       updateScores();
       gameOver=true;
       showOverlay("It's a Tie!");
+      return;
     }
 
     currentPlayer = playerSymbol;
-  },300);
+  }, 200);
 }
 
-function updateScore(player){
-  if(player==="X") scoreX++;
+function resetBoard(){
+  board=["","","","","","","","",""];
+  currentPlayer = playerSymbol;
+  gameOver=false;
+  createBoard();
+}
+
+function updateScore(symbol){
+  if(symbol==="X") scoreX++;
   else scoreO++;
   saveScores();
   updateScores();
@@ -178,83 +188,19 @@ function updateScores(){
 }
 
 function saveScores(){
-  localStorage.setItem("tttScoreX",scoreX);
-  localStorage.setItem("tttScoreO",scoreO);
-  localStorage.setItem("tttTie",tieScore);
+  localStorage.setItem("scoreX",scoreX);
+  localStorage.setItem("scoreO",scoreO);
+  localStorage.setItem("tieScore",tieScore);
 }
 
 function loadScores(){
-  scoreX = parseInt(localStorage.getItem("tttScoreX"))||0;
-  scoreO = parseInt(localStorage.getItem("tttScoreO"))||0;
-  tieScore = parseInt(localStorage.getItem("tttTie"))||0;
+  scoreX = parseInt(localStorage.getItem("scoreX"))||0;
+  scoreO = parseInt(localStorage.getItem("scoreO"))||0;
+  tieScore = parseInt(localStorage.getItem("tieScore"))||0;
   updateScores();
 }
 
-function resetBoard(){
-  board = ["","","","","","","","",""];
-  gameOver = false;
-  currentPlayer = (gameMode==="vs-ai") ? playerSymbol : "X";
-  document.querySelectorAll(".cell").forEach(c=>c.classList.remove("winning"));
-  createBoard();
-}
-
-// Event Listeners
-twoPlayerBtn.addEventListener("click",()=>{
-  gameMode="two-player";
-  currentPlayer="X";
-  symbolChoiceEl.classList.add("hidden");
-  difficultyChoiceEl.classList.add("hidden");
-  colorChoiceEl.classList.remove("hidden");
-  resetBoard();
-});
-
-vsAIBtn.addEventListener("click",()=>{
-  gameMode="vs-ai";
-  symbolChoiceEl.classList.remove("hidden");
-  difficultyChoiceEl.classList.add("hidden");
-  colorChoiceEl.classList.add("hidden");
-});
-
-chooseXBtn.addEventListener("click",()=>{
-  playerSymbol="X"; aiSymbol="O";
-  symbolChoiceEl.classList.add("hidden");
-  difficultyChoiceEl.classList.remove("hidden");
-});
-
-chooseOBtn.addEventListener("click",()=>{
-  playerSymbol="O"; aiSymbol="X";
-  symbolChoiceEl.classList.add("hidden");
-  difficultyChoiceEl.classList.remove("hidden");
-});
-
-easyBtn.addEventListener("click",()=>{
-  aiDifficulty="easy";
-  difficultyChoiceEl.classList.add("hidden");
-  colorChoiceEl.classList.remove("hidden");
-  resetBoard();
-});
-
-hardBtn.addEventListener("click",()=>{
-  aiDifficulty="hard";
-  difficultyChoiceEl.classList.add("hidden");
-  colorChoiceEl.classList.remove("hidden");
-  resetBoard();
-});
-
-applyColorsBtn.addEventListener("click",()=>{
-  colorX = colorXInput.value;
-  colorO = colorOInput.value;
-  colorBoard = colorBoardInput.value;
-  updateBoardColors();
-});
-
-resetBtn.addEventListener("click",()=>{
-  scoreX=0; scoreO=0; tieScore=0;
-  saveScores();
-  updateScores();
-});
-
-// Minimax for Hard AI
+// Minimax Algorithm
 function minimax(newBoard, player){
   const availSpots = newBoard.map((v,i)=>v===""?i:null).filter(i=>i!==null);
 
@@ -265,7 +211,7 @@ function minimax(newBoard, player){
   const moves = [];
   for(let i of availSpots){
     const move = {};
-    move.index = i;
+    move.index=i;
     newBoard[i]=player;
 
     if(player===aiSymbol){
@@ -283,10 +229,10 @@ function minimax(newBoard, player){
   let bestMove;
   if(player===aiSymbol){
     let bestScore=-Infinity;
-    moves.forEach(m=>{ if(m.score>bestScore){ bestScore=m.score; bestMove=m; } });
+    moves.forEach(m=>{if(m.score>bestScore){bestScore=m.score; bestMove=m;}});
   } else {
     let bestScore=Infinity;
-    moves.forEach(m=>{ if(m.score<bestScore){ bestScore=m.score; bestMove=m; } });
+    moves.forEach(m=>{if(m.score<bestScore){bestScore=m.score; bestMove=m;}});
   }
 
   return bestMove;
@@ -296,7 +242,63 @@ function checkWinForMinimax(b,player){
   return winningCombos.some(combo=>combo.every(i=>b[i]===player));
 }
 
-// Initialize
+// Button Events
+twoPlayerBtn.addEventListener("click", ()=>{
+  gameMode="two-player";
+  symbolChoiceEl.classList.remove("hidden");
+  difficultyChoiceEl.classList.add("hidden");
+});
+
+vsAIBtn.addEventListener("click", ()=>{
+  gameMode="vs-ai";
+  symbolChoiceEl.classList.remove("hidden");
+});
+
+chooseXBtn.addEventListener("click", ()=>{
+  playerSymbol="X";
+  aiSymbol="O";
+  currentPlayer=playerSymbol;
+  symbolChoiceEl.classList.add("hidden");
+  if(gameMode==="vs-ai") difficultyChoiceEl.classList.remove("hidden");
+  else resetBoard();
+});
+
+chooseOBtn.addEventListener("click", ()=>{
+  playerSymbol="O";
+  aiSymbol="X";
+  currentPlayer=playerSymbol;
+  symbolChoiceEl.classList.add("hidden");
+  if(gameMode==="vs-ai") difficultyChoiceEl.classList.remove("hidden");
+  else resetBoard();
+});
+
+easyBtn.addEventListener("click", ()=>{
+  aiDifficulty="easy";
+  difficultyChoiceEl.classList.add("hidden");
+  colorChoiceEl.classList.remove("hidden");
+  resetBoard();
+});
+
+hardBtn.addEventListener("click", ()=>{
+  aiDifficulty="hard";
+  difficultyChoiceEl.classList.add("hidden");
+  colorChoiceEl.classList.remove("hidden");
+  resetBoard();
+});
+
+applyColorsBtn.addEventListener("click", ()=>{
+  colorX=colorXInput.value;
+  colorO=colorOInput.value;
+  colorBoard=colorBoardInput.value;
+  updateBoardColors();
+});
+
+resetBtn.addEventListener("click", ()=>{
+  scoreX=0; scoreO=0; tieScore=0;
+  saveScores();
+  updateScores();
+});
+
 loadScores();
 createBoard();
 
