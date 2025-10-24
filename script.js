@@ -1,173 +1,87 @@
-const cells = document.querySelectorAll('.cell');
-const message = document.getElementById('message');
-const resetButton = document.getElementById('reset');
-const restartMatchBtn = document.getElementById('restartMatch');
-const turnDisplay = document.getElementById('turn');
-const modeRadios = document.querySelectorAll('input[name="mode"]');
+// Game state
+let board = Array(9).fill("");
+let currentPlayer = "X";
+let gameMode = "two-player"; // "two-player" or "vs-ai"
+let playerSymbol = "X";
+let aiSymbol = "O";
+let gameOver = false;
 
-const chooseXBtn = document.getElementById('chooseX');
-const chooseOBtn = document.getElementById('chooseO');
-const symbolChoiceDiv = document.getElementById('symbol-choice');
-const gameDiv = document.getElementById('game');
+// DOM elements
+const boardEl = document.getElementById("board");
+const resetBtn = document.getElementById("reset");
+const modeBtns = {
+  twoPlayer: document.getElementById("two-player"),
+  vsAI: document.getElementById("vs-ai")
+};
+const symbolChoiceEl = document.getElementById("symbol-choice");
+const chooseXBtn = document.getElementById("choose-x");
+const chooseOBtn = document.getElementById("choose-o");
 
-let board = Array(9).fill('');
-let playerSymbol = 'X';
-let aiSymbol = 'O';
-let currentPlayer = 'X';
-let isGameOver = false;
-let scoreX = 0;
-let scoreO = 0;
-let mode = 'ai';
-
-const winningCombinations = [
-  [0,1,2],[3,4,5],[6,7,8],
-  [0,3,6],[1,4,7],[2,5,8],
-  [0,4,8],[2,4,6]
+// Winning combinations
+const winningCombos = [
+  [0,1,2], [3,4,5], [6,7,8], // rows
+  [0,3,6], [1,4,7], [2,5,8], // columns
+  [0,4,8], [2,4,6]            // diagonals
 ];
 
-// Symbol selection
-chooseXBtn.addEventListener('click', () => { playerSymbol = 'X'; aiSymbol = 'O'; startGame(); });
-chooseOBtn.addEventListener('click', () => { playerSymbol = 'O'; aiSymbol = 'X'; startGame(); });
-
-function startGame() {
-  symbolChoiceDiv.style.display = 'none';
-  gameDiv.style.display = 'block';
-  currentPlayer = playerSymbol;
-  updateTurn();
-  resetBoard();
-
-  if (mode === 'ai' && playerSymbol === 'O') {
-    currentPlayer = aiSymbol;
-    updateTurn();
-    setTimeout(computerMove, 300);
-  }
+// Initialize board
+function initBoard() {
+  boardEl.innerHTML = "";
+  board.forEach((cell, index) => {
+    const cellEl = document.createElement("div");
+    cellEl.classList.add("cell");
+    cellEl.addEventListener("click", () => handleClick(cellEl, index));
+    boardEl.appendChild(cellEl);
+  });
 }
 
-// Mode switch
-modeRadios.forEach(radio => {
-  radio.addEventListener('change', () => {
-    mode = radio.value;
-    resetGame();
-  });
-});
+// Handle cell click
+function handleClick(cellEl, index) {
+  if (board[index] !== "" || gameOver) return;
 
-// Handle clicks
-cells.forEach(cell => {
-  cell.addEventListener('click', () => {
-    const index = cell.dataset.index;
-    if (board[index] === '' && !isGameOver) {
-      makeMove(cell, index, currentPlayer);
-      checkWinner();
-
-      if (!isGameOver) {
-        if (mode === 'two') {
-          currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-          updateTurn();
-        } else if (mode === 'ai' && currentPlayer === playerSymbol) {
-          currentPlayer = aiSymbol;
-          updateTurn();
-          setTimeout(computerMove, 300);
-        }
-      }
-    }
-  });
-});
-
-function makeMove(cell, index, player) {
-  const symbol = player.toUpperCase(); // ensure X or O
+  const symbol = currentPlayer;
   board[index] = symbol;
-  cell.textContent = symbol;
-  cell.style.color = symbol === 'X' ? 'red' : 'blue';
-}
+  cellEl.textContent = symbol;
+  cellEl.classList.remove("x","o");
+  cellEl.classList.add(symbol.toLowerCase());
 
-function checkWinner() {
-  for (let combo of winningCombinations) {
-    const [a,b,c] = combo;
-    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-      combo.forEach(i => cells[i].classList.add('winning'));
-      message.textContent = `Player ${board[a]} wins!`;
-      isGameOver = true;
-      board[a]==='X'?scoreX++:scoreO++;
-      updateScore();
-      return;
-    }
-  }
-  if (!board.includes('')) {
-    message.textContent = "It's a tie!";
-    isGameOver = true;
-  }
-}
-
-function updateScore() {
-  document.getElementById('scoreX').textContent = scoreX;
-  document.getElementById('scoreO').textContent = scoreO;
-}
-
-function updateTurn() {
-  if (!isGameOver) turnDisplay.textContent = `Current turn: ${currentPlayer}`;
-  else turnDisplay.textContent = '';
-}
-
-resetButton.addEventListener('click', resetGame);
-restartMatchBtn.addEventListener('click', resetMatch);
-
-function resetBoard() {
-  board.fill('');
-  cells.forEach(cell => {
-    cell.textContent = '';
-    cell.classList.remove('winning');
-  });
-  isGameOver = false;
-  message.textContent = '';
-}
-
-function resetGame() {
-  scoreX = 0;
-  scoreO = 0;
-  updateScore();
-  resetBoard();
-  currentPlayer = playerSymbol;
-  updateTurn();
-}
-
-function resetMatch() {
-  resetBoard();
-  currentPlayer = playerSymbol;
-  updateTurn();
-}
-
-// Simple AI
-function computerMove() {
-  if (isGameOver) return;
-
-  let move = findWinningMove(aiSymbol) || findWinningMove(playerSymbol) || (board[4] === '' ? 4 : null);
-
-  if (!move) {
-    const corners = [0, 2, 6, 8].filter(i => board[i] === '');
-    move = corners.length ? corners[Math.floor(Math.random() * corners.length)] : null;
+  if (checkWin(symbol)) {
+    gameOver = true;
+    alert(symbol + " wins!");
+    return;
   }
 
-  if (!move) {
-    const empty = board.map((v,i)=>v===''?i:null).filter(v=>v!==null);
-    move = empty.length ? empty[Math.floor(Math.random()*empty.length)] : null;
+  if (board.every(cell => cell !== "")) {
+    gameOver = true;
+    alert("It's a tie!");
+    return;
   }
 
-  if (move !== null) {
-    makeMove(cells[move], move, aiSymbol);
-    checkWinner();
+  if (gameMode === "two-player") {
+    currentPlayer = currentPlayer === "X" ? "O" : "X";
+  } else if (gameMode === "vs-ai") {
+    currentPlayer = aiSymbol;
+    aiMove();
     currentPlayer = playerSymbol;
-    updateTurn();
   }
 }
 
-function findWinningMove(player) {
-  for (let combo of winningCombinations) {
-    const [a,b,c] = combo;
-    const line = [board[a], board[b], board[c]];
-    if (line.filter(v => v===player).length === 2 && line.includes('')) return combo[line.indexOf('')];
-  }
-  return null;
-}
+// AI move: random empty cell
+function aiMove() {
+  if (gameOver) return;
+  const emptyIndexes = board.map((v,i) => v === "" ? i : null).filter(v => v !== null);
+  if (emptyIndexes.length === 0) return;
+
+  const moveIndex = emptyIndexes[Math.floor(Math.random()*emptyIndexes.length)];
+  const cellEl = boardEl.children[moveIndex];
+  board[moveIndex] = aiSymbol;
+  cellEl.textContent = aiSymbol;
+  cellEl.classList.remove("x","o");
+  cellEl.classList.add(aiSymbol.toLowerCase());
+
+  checkWin(ai
+
+
 
 
 
