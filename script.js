@@ -75,8 +75,8 @@ cells.forEach(cell => {
 
 function makeMove(cell, index, player) {
   board[index] = player;
-  cell.querySelector('span').textContent = player;
-  cell.querySelector('span').style.color = player === 'X' ? 'red' : 'blue';
+  cell.textContent = player;
+  cell.style.color = player === 'X' ? 'red' : 'blue';
 }
 
 function checkWinner() {
@@ -120,7 +120,7 @@ restartMatchBtn.addEventListener('click', resetMatch);
 function resetBoard() {
   board.fill('');
   cells.forEach(cell => {
-    cell.querySelector('span').textContent = '';
+    cell.textContent = '';
     cell.classList.remove('winning');
   });
   isGameOver = false;
@@ -174,3 +174,5 @@ function findWinningMove(player) {
   }
   return null;
 }
+
+
