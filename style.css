@@ -1,6 +1,21 @@
 body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
   font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
   text-align: center;
+}
+
+#menu, #symbol-choice, #difficulty-choice, #color-choice, #scoreboard {
+  margin: 10px 0;
+}
+
+.hidden {
+  display: none;
 }
 
 #board {
@@ -8,75 +23,40 @@ body {
   grid-template-columns: repeat(3, 100px);
   grid-template-rows: repeat(3, 100px);
   gap: 5px;
-  margin: 20px auto;
+  margin-top: 20px;
 }
 
 .cell {
+  width: 100px;
+  height: 100px;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 2.5rem;
+  background-color: #f0f0f0;
   cursor: pointer;
-  user-select: none;
+  border: 2px solid #333;
+  box-sizing: border-box;
 }
 
-.cell.winning {
-  background-color: lightgreen !important;
-}
-
-.ai-thinking {
-  background-color: #ffff99;
-  transition: background-color 0.3s;
+.winning {
+  background-color: #FFFF00 !important;
 }
 
 #overlay {
   position: fixed;
   top:0; left:0;
   width:100%; height:100%;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.7);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 10;
 }
 
 #overlay-content {
   background: #fff;
-  padding: 30px;
-  border-radius: 15px;
-  text-align: center;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-}
-
-#overlay-content h2 {
-  margin-bottom: 20px;
-}
-
-#overlay-content button {
-  background-color: #007BFF;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  font-size: 1rem;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-#overlay-content button:hover {
-  background-color: #0056b3;
-}
-
-/* Responsive for mobile */
-@media (max-width: 500px) {
-  #board {
-    grid-template-columns: repeat(3, 70px);
-    grid-template-rows: repeat(3, 70px);
-    gap: 4px;
-  }
-
-  .cell {
-    font-size: 2rem;
-  }
+  padding: 20px 40px;
+  border-radius: 10px;
 }
 
 
